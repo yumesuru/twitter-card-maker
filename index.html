@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>트위터 자기소개 카드 메이커</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300;400;500;600;700;800&family=Gowun+Batang&family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="preview-panel" aria-label="카드 미리보기">
+        <div class="preview-shell">
+          <p class="layout-label">기본 레이아웃 (가로형)</p>
+          <div id="cardViewport" class="card-viewport">
+            <div id="card" class="card" aria-label="완성 카드">
+              <div class="card-inner">
+                <section class="top-layout">
+                  <div class="profile-block">
+                  <div class="avatar-wrap">
+                    <img id="avatarPreview" alt="" class="avatar" />
+                    <div id="avatarPlaceholder" class="avatar-placeholder"></div>
+                  </div>
+                  <div class="identity">
+                    <div class="one-liner"><span class="speech-tail"></span><span id="oneLinerPreview">한마디</span></div>
+                    <p id="namePreview" class="name">이름</p>
+                    <p id="handlePreview" class="handle">@twitter_id</p>
+                  </div>
+                  </div>
+
+                  <section class="image-stack" id="imageStack" aria-label="이미지 영역"></section>
+                </section>
+
+                <div class="divider"></div>
+
+                <section class="content-layout">
+                  <article class="text-section intro-section">
+                    <h2><span>1</span>소개</h2>
+                    <p id="introPreview">젠더 나이 / 사용하는 닉네임 팔로우 관련 사항을 적습니다.</p>
+                  </article>
+
+                  <article class="text-section ng-section">
+                    <h2><span>3</span>NG</h2>
+                    <p id="ngPreview">곤란한 것을 서술합니다. 대처방법도 적습니다.</p>
+                  </article>
+
+                  <article class="text-section tendency-section">
+                    <h2><span>2</span>성향</h2>
+                    <div id="tagPreview" class="tag-preview"></div>
+                    <p id="tagDescriptionPreview" class="tag-description">여기부터는 성향 관련 자유 설명란입니다.</p>
+                  </article>
+
+                  <article class="text-section free-section">
+                    <h2><span>4</span>자유란</h2>
+                    <p id="freePreview">하고 싶은 말을 적습니다.</p>
+                  </article>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="export-row">
+          <button id="saveJson" type="button">JSON 저장</button>
+          <label class="file-button">
+            JSON 불러오기
+            <input id="loadJson" type="file" accept="application/json,.json" />
+          </label>
+          <button id="savePng" type="button">PNG 저장</button>
+          <button id="saveJpg" type="button">JPG 저장</button>
+        </div>
+      </section>
+
+      <aside class="editor-panel" aria-label="입력 폼">
+        <div class="panel-header">
+          <h1>트위터 자기소개표</h1>
+          <button id="resetAll" type="button" class="ghost-button">초기화</button>
+        </div>
+
+        <details open>
+          <summary>기본 정보</summary>
+          <div class="field-grid">
+            <label>닉네임 <input id="name" type="text" /></label>
+            <label>아이디 <input id="handle" type="text" /></label>
+            <label>한마디 <input id="oneLiner" type="text" /></label>
+          </div>
+          <label>소개 <textarea id="intro" rows="4"></textarea></label>
+        </details>
+
+        <details>
+          <summary>이미지</summary>
+          <div class="image-count">
+            <span>우상단 이미지 개수</span>
+            <div class="segmented" role="group" aria-label="우상단 이미지 개수">
+              <button data-count="0" type="button">0</button>
+              <button data-count="1" type="button">1</button>
+              <button data-count="2" type="button">2</button>
+              <button data-count="3" type="button">3</button>
+            </div>
+          </div>
+          <div class="image-editor">
+            <h3>프로필 이미지</h3>
+            <label class="file-drop">
+              <input id="avatarInput" type="file" accept="image/*" />
+              이미지 선택
+            </label>
+            <div class="crop-navigator" data-crop-for="avatar" role="button" tabindex="0">
+              <img alt="" class="crop-nav-image" />
+              <span class="crop-nav-empty">이미지 선택</span>
+              <span class="crop-nav-cross"></span>
+            </div>
+            <label class="zoom-control">줌 <input type="range" min="100" max="220" data-zoom-for="avatar" /></label>
+          </div>
+          <div id="imageInputs" class="image-inputs"></div>
+        </details>
+
+        <details open>
+          <summary>성향 태그</summary>
+          <label>강조 색상
+            <span class="color-control">
+              <button class="color-swatch" data-color-swatch="accentColor" type="button" aria-label="강조 색상 선택"></button>
+              <input class="color-hex" data-color-hex="accentColor" type="text" inputmode="text" maxlength="7" />
+              <input id="accentColor" data-color-picker="accentColor" type="color" />
+            </span>
+          </label>
+          <div id="tagToggles" class="tag-toggles"></div>
+        </details>
+
+        <details>
+          <summary>내용</summary>
+          <label>NG <textarea id="ng" rows="4"></textarea></label>
+          <label>성향 설명 <textarea id="tagDescription" rows="3"></textarea></label>
+          <label>자유란 <textarea id="freeText" rows="4"></textarea></label>
+        </details>
+
+        <details>
+          <summary>폰트와 색상</summary>
+          <div class="field-grid">
+            <label>폰트
+              <select id="fontFamily">
+                <option value="'Asta Sans', 'Noto Sans KR', sans-serif">Asta Sans</option>
+                <option value="'Gowun Batang', 'Noto Serif KR', serif">Gowun Batang</option>
+                <option value="'Gowun Dodum', 'Noto Sans KR', sans-serif">Gowun Dodum</option>
+                <option value="'IBM Plex Sans KR', 'Noto Sans KR', sans-serif">IBM Plex Sans KR</option>
+                <option value="'Noto Sans KR', Pretendard, system-ui, sans-serif">Noto Sans KR</option>
+                <option value="'Noto Serif KR', serif">Noto Serif KR</option>
+                <option value="'Pretendard', 'Noto Sans KR', system-ui, sans-serif">Pretendard</option>
+              </select>
+            </label>
+            <label>배경
+              <span class="color-control">
+                <button class="color-swatch" data-color-swatch="cardBg" type="button" aria-label="배경 색상 선택"></button>
+                <input class="color-hex" data-color-hex="cardBg" type="text" inputmode="text" maxlength="7" />
+                <input id="cardBg" data-color-picker="cardBg" type="color" />
+              </span>
+            </label>
+            <label>닉네임
+              <span class="color-control">
+                <button class="color-swatch" data-color-swatch="nameColor" type="button" aria-label="닉네임 색상 선택"></button>
+                <input class="color-hex" data-color-hex="nameColor" type="text" inputmode="text" maxlength="7" />
+                <input id="nameColor" data-color-picker="nameColor" type="color" />
+              </span>
+            </label>
+            <label>소제목
+              <span class="color-control">
+                <button class="color-swatch" data-color-swatch="headingColor" type="button" aria-label="소제목 색상 선택"></button>
+                <input class="color-hex" data-color-hex="headingColor" type="text" inputmode="text" maxlength="7" />
+                <input id="headingColor" data-color-picker="headingColor" type="color" />
+              </span>
+            </label>
+            <label>말풍선
+              <span class="color-control">
+                <button class="color-swatch" data-color-swatch="bubbleColor" type="button" aria-label="말풍선 색상 선택"></button>
+                <input class="color-hex" data-color-hex="bubbleColor" type="text" inputmode="text" maxlength="7" />
+                <input id="bubbleColor" data-color-picker="bubbleColor" type="color" />
+              </span>
+            </label>
+            <label>한마디
+              <span class="color-control">
+                <button class="color-swatch" data-color-swatch="oneLinerColor" type="button" aria-label="한마디 색상 선택"></button>
+                <input class="color-hex" data-color-hex="oneLinerColor" type="text" inputmode="text" maxlength="7" />
+                <input id="oneLinerColor" data-color-picker="oneLinerColor" type="color" />
+              </span>
+            </label>
+            <label>글자
+              <span class="color-control">
+                <button class="color-swatch" data-color-swatch="textColor" type="button" aria-label="글자 색상 선택"></button>
+                <input class="color-hex" data-color-hex="textColor" type="text" inputmode="text" maxlength="7" />
+                <input id="textColor" data-color-picker="textColor" type="color" />
+              </span>
+            </label>
+            <label>선
+              <span class="color-control">
+                <button class="color-swatch" data-color-swatch="lineColor" type="button" aria-label="선 색상 선택"></button>
+                <input class="color-hex" data-color-hex="lineColor" type="text" inputmode="text" maxlength="7" />
+                <input id="lineColor" data-color-picker="lineColor" type="color" />
+              </span>
+            </label>
+          </div>
+        </details>
+      </aside>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
