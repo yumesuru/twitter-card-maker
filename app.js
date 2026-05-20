@@ -1,6 +1,7 @@
 const STORAGE_KEY = "twitter-card-maker-state-v3";
 
 const defaults = {
+  layoutPreset: "default",
   name: "이름",
   handle: "@twitter_id",
   oneLiner: "한마디",
@@ -34,8 +35,16 @@ let state = loadState();
 const $ = (id) => document.getElementById(id);
 const textFields = ["name", "handle", "oneLiner", "intro", "ng", "tagDescription", "freeText"];
 const colorFields = ["accentColor", "cardBg", "textColor", "bubbleColor", "oneLinerColor", "nameColor", "headingColor", "lineColor"];
-const styleFields = ["fontFamily"];
+const styleFields = ["layoutPreset", "fontFamily"];
 const imageSlots = [538, 761, 984];
+const layoutPresets = {
+  default: { label: "기본 가로형", width: 1200, height: 675 },
+  extended: { label: "기본 가로형(확장)", width: 1200, height: 800 },
+};
+let previewZoom = 1;
+let previewPanX = 0;
+let previewPanY = 0;
+let activePreviewDrag = null;
 let activeCropNavigator = null;
 let activeCropPointerId = null;
 
@@ -91,6 +100,7 @@ function persist() {
 
 function setCssVars() {
   const root = document.documentElement;
+  const layout = getLayoutPreset();
   root.style.setProperty("--accent", state.accentColor);
   root.style.setProperty("--card-bg", state.cardBg);
   root.style.setProperty("--card-text", state.textColor);
@@ -100,7 +110,22 @@ function setCssVars() {
   root.style.setProperty("--name-color", state.nameColor);
   root.style.setProperty("--heading", state.headingColor);
   root.style.setProperty("--line", state.lineColor);
+  root.style.setProperty("--card-width", `${layout.width}px`);
+  root.style.setProperty("--card-height", `${layout.height}px`);
+  $("card").classList.toggle("layout-extended", state.layoutPreset === "extended");
   $("card").style.fontFamily = state.fontFamily;
+}
+
+function getLayoutPreset() {
+  return layoutPresets[state.layoutPreset] || layoutPresets.default;
+}
+
+function getPreviewFitScale(layout) {
+  const shell = document.querySelector(".preview-shell");
+  if (!shell) return 1;
+  const availableWidth = Math.max(1, shell.clientWidth - 54);
+  const availableHeight = Math.max(240, window.innerHeight - 150);
+  return Math.min(1, availableWidth / layout.width, availableHeight / layout.height);
 }
 
 function imageStyle(crop) {
@@ -157,6 +182,7 @@ function renderInputs() {
   [...textFields, ...styleFields].forEach((id) => {
     $(id).value = state[id];
   });
+  document.querySelector(".layout-label").textContent = getLayoutPreset().label;
   renderColorControls();
   document.querySelectorAll("[data-count]").forEach((button) => {
     button.classList.toggle("is-active", Number(button.dataset.count) === state.imageCount);
@@ -311,7 +337,39 @@ function bindInputs() {
     $(id).addEventListener("input", (event) => {
       state[id] = event.target.value;
       renderCard();
+      if (id === "layoutPreset") fitPreview();
       persist();
+    });
+  });
+
+  $("previewZoom").addEventListener("input", (event) => {
+    previewZoom = Math.max(1, Number(event.target.value) / 100);
+    fitPreview();
+  });
+
+  $("cardViewport").addEventListener("pointerdown", (event) => {
+    if (previewZoom <= 1) return;
+    event.preventDefault();
+    activePreviewDrag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      panX: previewPanX,
+      panY: previewPanY,
+    };
+    $("cardViewport").setPointerCapture(event.pointerId);
+  });
+
+  $("cardViewport").addEventListener("pointermove", (event) => {
+    if (!activePreviewDrag || event.pointerId !== activePreviewDrag.pointerId) return;
+    previewPanX = activePreviewDrag.panX + event.clientX - activePreviewDrag.startX;
+    previewPanY = activePreviewDrag.panY + event.clientY - activePreviewDrag.startY;
+    fitPreview();
+  });
+
+  ["pointerup", "pointercancel"].forEach((type) => {
+    $("cardViewport").addEventListener(type, (event) => {
+      if (activePreviewDrag?.pointerId === event.pointerId) activePreviewDrag = null;
     });
   });
 
@@ -470,9 +528,10 @@ async function exportImage(type) {
     }
     if (document.fonts?.ready) await document.fonts.ready;
     const card = $("card");
+    const layout = getLayoutPreset();
     const options = {
-      width: 1200,
-      height: 675,
+      width: layout.width,
+      height: layout.height,
       pixelRatio: 1,
       cacheBust: true,
       backgroundColor: state.cardBg,
@@ -534,14 +593,26 @@ function fitPreview() {
   const shell = document.querySelector(".preview-shell");
   const viewport = $("cardViewport");
   if (!shell || !viewport) return;
-  const availableWidth = shell.clientWidth;
-  const availableHeight = Math.max(240, window.innerHeight - 150);
-  const scale = Math.min(1, availableWidth / 1200, availableHeight / 675);
-  viewport.style.transform = `scale(${scale})`;
-  viewport.style.width = "1200px";
-  viewport.style.height = "675px";
-  shell.style.height = `${675 * scale + 8}px`;
-  shell.style.maxWidth = `${1200 * scale}px`;
+  const layout = getLayoutPreset();
+  const fitScale = getPreviewFitScale(layout);
+  const scale = fitScale * previewZoom;
+  const scaledWidth = layout.width * scale;
+  const scaledHeight = layout.height * scale;
+  const baseWidth = layout.width * fitScale;
+  const baseHeight = layout.height * fitScale;
+  const maxPanX = Math.max(0, (scaledWidth - baseWidth) / 2);
+  const maxPanY = Math.max(0, (scaledHeight - baseHeight) / 2);
+  previewPanX = clamp(previewPanX, -maxPanX, maxPanX);
+  previewPanY = clamp(previewPanY, -maxPanY, maxPanY);
+  if (previewZoom <= 1) {
+    previewPanX = 0;
+    previewPanY = 0;
+  }
+  viewport.style.transform = `translate(${previewPanX}px, ${previewPanY}px) scale(${scale})`;
+  viewport.style.width = `${layout.width}px`;
+  viewport.style.height = `${layout.height}px`;
+  shell.style.height = `${layout.height * fitScale + 8}px`;
+  shell.style.maxWidth = `${layout.width * fitScale + 54}px`;
 }
 
 window.addEventListener("resize", fitPreview);

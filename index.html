@@ -64,6 +64,10 @@
               </div>
             </div>
           </div>
+          <label class="preview-zoom-control" aria-label="미리보기 줌">
+            <span>줌</span>
+            <input id="previewZoom" type="range" min="100" max="140" value="100" orient="vertical" />
+          </label>
         </div>
         <div class="export-row">
           <button id="saveJson" type="button">JSON 저장</button>
@@ -85,6 +89,12 @@
         <details open>
           <summary>기본 정보</summary>
           <div class="field-grid">
+            <label>레이아웃
+              <select id="layoutPreset">
+                <option value="default">기본 가로형</option>
+                <option value="extended">기본 가로형(확장)</option>
+              </select>
+            </label>
             <label>닉네임 <input id="name" type="text" /></label>
             <label>아이디 <input id="handle" type="text" /></label>
             <label>한마디 <input id="oneLiner" type="text" /></label>

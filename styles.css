@@ -9,6 +9,8 @@
   --accent: #6383d7;
   --off: #d9d9d9;
   --bubble: #d9d9d9;
+  --card-width: 1200px;
+  --card-height: 675px;
 }
 
 * {
@@ -66,10 +68,39 @@ button:hover,
 }
 
 .preview-shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  gap: 12px;
+  align-items: start;
   width: 100%;
   margin: 0 auto;
-  overflow: hidden;
+  overflow: visible;
   padding-bottom: 8px;
+}
+
+.preview-zoom-control {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  width: 42px;
+  height: 210px;
+  margin: 0;
+  color: #666;
+  font-size: 12px;
+  font-weight: 800;
+  overflow: visible;
+}
+
+.preview-zoom-control input {
+  position: absolute;
+  left: 50%;
+  top: 116px;
+  width: 180px;
+  height: 32px;
+  transform: translateX(-50%) rotate(-90deg);
+  transform-origin: center;
 }
 
 .layout-label {
@@ -77,15 +108,16 @@ button:hover,
 }
 
 .card-viewport {
-  width: 1200px;
-  height: 675px;
+  width: var(--card-width);
+  height: var(--card-height);
   margin: 0;
   transform-origin: top left;
+  touch-action: none;
 }
 
 .card {
-  width: 1200px;
-  height: 675px;
+  width: var(--card-width);
+  height: var(--card-height);
   background: var(--card-bg);
   color: var(--card-text);
   overflow: hidden;
@@ -99,12 +131,17 @@ button:hover,
 
 .card-credit {
   position: absolute;
+  left: 0;
   right: 6px;
   bottom: 5px;
   color: #9d9d9d;
   font-size: 11px;
   font-weight: 500;
   line-height: 1;
+  text-align: right;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .top-layout {
@@ -502,7 +539,7 @@ label {
   margin-top: 12px;
   color: #666;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 input[type="text"],
@@ -559,7 +596,7 @@ input[type="color"] {
   margin-top: 12px;
   color: #666;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .segmented {
