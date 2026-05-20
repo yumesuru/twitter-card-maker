@@ -162,20 +162,29 @@ button:hover,
   position: absolute;
   left: 223px;
   top: 55px;
-  width: 270px;
+  width: 345px;
   height: 40px;
   margin: 0;
-  display: block;
-  padding: 0 14px;
+  padding: 0;
   border-radius: 10px;
   background: var(--bubble);
   color: var(--one-liner);
+  overflow: visible;
+}
+
+.one-liner-text {
+  position: absolute;
+  left: 14px;
+  top: 0;
+  width: 317px;
+  height: 40px;
+  line-height: 40px;
   font-size: 16px;
   font-weight: 500;
-  line-height: 40px;
   white-space: nowrap;
   word-break: keep-all;
   overflow-wrap: normal;
+  writing-mode: horizontal-tb;
 }
 
 #oneLinerPreview {
