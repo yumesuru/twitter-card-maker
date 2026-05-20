@@ -60,8 +60,9 @@
 
 ## 내보내기
 
-PNG/JPG 내보내기는 `html-to-image`를 사용합니다. 인터넷 연결 없이 저장 가능합니다.
-(라이브러리 `vendor/html-to-image에 포함)
+PNG/JPG 내보내기는 `html-to-image`를 사용합니다.
+
+라이브러리는 `vendor/html-to-image.js`에 포함되어 있어 CDN 없이 동작합니다.
 
 ## 사용 방법
 
