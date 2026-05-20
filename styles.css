@@ -165,15 +165,21 @@ button:hover,
   width: 270px;
   height: 40px;
   margin: 0;
-  display: flex;
-  align-items: center;
+  display: block;
   padding: 0 14px;
   border-radius: 10px;
   background: var(--bubble);
   color: var(--one-liner);
   font-size: 16px;
   font-weight: 500;
-  line-height: 1.3;
+  line-height: 40px;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+#oneLinerPreview {
+  display: block;
   white-space: nowrap;
   word-break: keep-all;
   overflow-wrap: normal;
