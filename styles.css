@@ -162,7 +162,7 @@ button:hover,
   position: absolute;
   left: 223px;
   top: 55px;
-  width: 300px;
+  width: 280px;
   height: 40px;
   margin: 0;
   padding: 0;
@@ -176,12 +176,12 @@ button:hover,
   position: absolute;
   left: 14px;
   top: 0;
-  width: 272px;
+  width: 253px;
   height: 40px;
   line-height: 40px;
   font-size: 16px;
   font-weight: 500;
-  white-space: nowrap;
+  white-space: 지금rap;
   word-break: keep-all;
   overflow-wrap: normal;
   writing-mode: horizontal-tb;
@@ -189,7 +189,7 @@ button:hover,
 
 #oneLinerPreview {
   display: block;
-  white-space: nowrap;
+  white-space: 지금rap;
   word-break: keep-all;
   overflow-wrap: normal;
 }
