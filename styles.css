@@ -376,6 +376,11 @@ button:hover,
   width: 620px;
 }
 
+.card.layout-extended .tendency-section,
+.card.layout-extended .free-section {
+  top: 465px;
+}
+
 .text-section h2 {
   position: relative;
   display: block;

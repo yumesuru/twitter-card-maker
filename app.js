@@ -5,9 +5,9 @@ const defaults = {
   name: "이름",
   handle: "@twitter_id",
   oneLiner: "한마디",
-  intro: "젠더 나이 / 사용하는 닉네임\n팔로우 관련 사항 (FUB Free, 구독 안 받습니다, 이별 블언블 등등)\n3~4줄까지가 적당합니다.",
-  ng: "곤란한 것을 서술합니다.\n대처방법도 적습니다. (단뮤, 계정 뮤트, 직멘 시 블락 등)\n3~4줄까지가 적당합니다.",
-  tagDescription: "여기부터는 성향 관련 자유 설명란입니다.\n2줄까지가 적당합니다.",
+  intro: "젠더 나이 / 사용하는 닉네임\n팔로우 관련 사항 (FUB Free, 구독 안 받습니다, 이별 블언블 등등)\n5~6줄까지가 적당합니다.",
+  ng: "곤란한 것을 서술합니다.\n대처방법도 적습니다. (단뮤, 계정 뮤트, 직멘 시 블락 등)\5~6줄까지가 적당합니다.",
+  tagDescription: "여기부터는 성향 관련 자유 설명란입니다.\n5~6줄까지가 적당합니다.",
   freeText: "하고 싶은 말을 적습니다.",
   accentColor: "#6383d7",
   cardBg: "#ffffff",
@@ -337,7 +337,16 @@ function bindInputs() {
     $(id).addEventListener("input", (event) => {
       state[id] = event.target.value;
       renderCard();
-      if (id === "layoutPreset") fitPreview();
+      if (id === "layoutPreset") {
+        previewPanX = 0;
+        previewPanY = 0;
+        resetPreviewSize();
+        requestAnimationFrame(() => {
+          resetPreviewSize();
+          fitPreview();
+          requestAnimationFrame(fitPreview);
+        });
+      }
       persist();
     });
   });
@@ -613,6 +622,15 @@ function fitPreview() {
   viewport.style.height = `${layout.height}px`;
   shell.style.height = `${layout.height * fitScale + 8}px`;
   shell.style.maxWidth = `${layout.width * fitScale + 54}px`;
+}
+
+function resetPreviewSize() {
+  const shell = document.querySelector(".preview-shell");
+  const viewport = $("cardViewport");
+  if (!shell || !viewport) return;
+  shell.style.height = "";
+  shell.style.maxWidth = "";
+  viewport.style.transform = "none";
 }
 
 window.addEventListener("resize", fitPreview);
