@@ -138,15 +138,15 @@ function renderCard() {
     imageStack.appendChild(tile);
   });
 
-  const tagLines = parseTagLines();
+  const tagLines = parseTagLineItems();
   $("tagPreview").innerHTML = "";
   tagLines.forEach((line) => {
     const row = document.createElement("div");
     row.className = "tag-row";
     line.forEach((tag) => {
       const pill = document.createElement("span");
-      pill.className = `tag-pill ${state.enabledTags.includes(tag) ? "is-on" : ""}`;
-      pill.textContent = tag;
+      pill.className = `tag-pill ${state.enabledTags.includes(tag.key) ? "is-on" : ""}`;
+      pill.textContent = tag.label;
       row.appendChild(pill);
     });
     $("tagPreview").appendChild(row);
@@ -239,7 +239,7 @@ function isHexColor(value) {
 }
 
 function parseTags() {
-  return parseTagLines().flat();
+  return parseTagLineItems().flat().map((tag) => tag.key);
 }
 
 function parseTagLines() {
@@ -249,21 +249,37 @@ function parseTagLines() {
     .filter((line) => line.length);
 }
 
+function parseTagLineItems() {
+  const lines = parseTagLines();
+  const totals = new Map();
+  lines.flat().forEach((tag) => totals.set(tag, (totals.get(tag) || 0) + 1));
+  const seen = new Map();
+  return lines.map((line) => line.map((label) => {
+    const count = (seen.get(label) || 0) + 1;
+    seen.set(label, count);
+    return {
+      label,
+      key: totals.get(label) > 1 ? `${label}#${count}` : label,
+    };
+  }));
+}
+
 function renderTagToggles() {
-  const tags = parseTags();
-  state.enabledTags = state.enabledTags.filter((tag) => tags.includes(tag));
+  const tags = parseTagLineItems().flat();
+  const tagKeys = tags.map((tag) => tag.key);
+  state.enabledTags = state.enabledTags.filter((tag) => tagKeys.includes(tag));
   const host = $("tagToggles");
   host.innerHTML = "";
   tags.forEach((tag) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `tag-toggle ${state.enabledTags.includes(tag) ? "is-on" : ""}`;
-    button.textContent = tag;
+    button.className = `tag-toggle ${state.enabledTags.includes(tag.key) ? "is-on" : ""}`;
+    button.textContent = tag.label;
     button.addEventListener("click", () => {
-      if (state.enabledTags.includes(tag)) {
-        state.enabledTags = state.enabledTags.filter((item) => item !== tag);
+      if (state.enabledTags.includes(tag.key)) {
+        state.enabledTags = state.enabledTags.filter((item) => item !== tag.key);
       } else {
-        state.enabledTags.push(tag);
+        state.enabledTags.push(tag.key);
       }
       render();
       persist();
