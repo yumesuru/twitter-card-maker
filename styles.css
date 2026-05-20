@@ -174,7 +174,9 @@ button:hover,
   font-size: 16px;
   font-weight: 500;
   line-height: 1.3;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .speech-tail {
