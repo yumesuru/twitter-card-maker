@@ -97,6 +97,16 @@ button:hover,
   inset: 0;
 }
 
+.card-credit {
+  position: absolute;
+  right: 6px;
+  bottom: 5px;
+  color: #9d9d9d;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+}
+
 .top-layout {
   position: static;
 }
@@ -412,6 +422,15 @@ button:hover,
   align-items: center;
   justify-content: center;
   position: relative;
+  font-weight: 400;
+}
+
+.export-row .file-button {
+  min-height: 40px;
+  margin-top: 0;
+  color: var(--tool-text);
+  font-size: inherit;
+  font-weight: 400;
 }
 
 .file-button input,
